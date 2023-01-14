@@ -1,0 +1,48 @@
+.tileBoard {
+	display: grid;
+	grid-template-columns: repeat(11, 1fr);
+	grid-template-rows: repeat(11, 1fr);
+	grid-gap: 2px;
+	aspect-ratio: 1 / 1;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.tile {
+	background-color: lightgray;
+	border-radius: 2px;
+	border: 0;
+}
+
+.forest { background-color: green; }
+.village { background-color: red; }
+.farm { background-color: yellow; }
+.water { background-color: blue; }
+.monster { background-color: purple; }
+
+.brushes {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.brushes > button {
+	border: 0;
+	border-radius: 5px;
+	padding: 0.5em;
+	margin: 0.5em;
+}
+
+.erase {
+	background-color: white;
+}
+
+.tile.mountain {
+	background: rgb(79, 58, 58);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: lighter;
+	border: 1px solid var(--mountain-border);
+}

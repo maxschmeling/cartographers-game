@@ -1,0 +1,1 @@
+export type TileType = 'forest' | 'village' | 'farm' | 'water' | 'monster';
