@@ -6,6 +6,7 @@ import { TileType } from './tiles';
 import MountainTile from './tiles/MountainTile';
 import RuinTile from './tiles/RuinTile';
 import StandardTile from './tiles/StandardTile';
+import Coin from './Coin';
 
 const ruins = [
 	[ 5, 1 ],
@@ -81,21 +82,21 @@ export default function Game() {
 					<button className={ styles.water } onClick={ () => setBrush( "water" ) }>Water</button>
 					<button className={ styles.monster } onClick={ () => setBrush( "monster" ) }>Monster</button>
 				</div>
-				<div id="coins">
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
-					<div className="coin"></div>
+				<div className={ styles.coins }>
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
+					<Coin />
 				</div>
 				<div id="score">
 					

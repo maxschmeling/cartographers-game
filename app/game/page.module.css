@@ -46,3 +46,21 @@
 	font-weight: lighter;
 	border: 1px solid var(--mountain-border);
 }
+
+.coins {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.coin {
+	background-color: yellow;
+	border-radius: 100;
+	margin: 4px;
+	aspect-ratio: 1 / 1;
+	flex-grow: 1;
+}
+
+.selected {
+	background-color: rgb(121, 88, 3);
+}
