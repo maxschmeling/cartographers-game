@@ -7,6 +7,7 @@ import MountainTile from './tiles/MountainTile';
 import RuinTile from './tiles/RuinTile';
 import StandardTile from './tiles/StandardTile';
 import Coin from './Coin';
+import SeasonScore from './SeasonScore';
 
 const ruins = [
 	[ 5, 1 ],
@@ -27,6 +28,10 @@ const mountains = [
 export default function Game() {
 	const [ brush, setBrush ] = useState<TileType>( 'village' );
 	const [ board, setBoard ] = useState< { row: number, column: number, type: TileType }[] >( [ ] );
+	const [ seasonOneScore, setSeasonOneScore ] = useState( 0 );
+	const [ seasonTwoScore, setSeasonTwoScore ] = useState( 0 );
+	const [ seasonThreeScore, setSeasonThreeScore ] = useState( 0 );
+	const [ seasonFourScore, setSeasonFourScore ] = useState( 0 );
 
 	const gameBoard = [];
 
@@ -98,8 +103,16 @@ export default function Game() {
 					<Coin />
 					<Coin />
 				</div>
-				<div id="score">
-					
+				<div className={ styles.scoreBoard }>
+					<div className={ styles.seasonScores }>
+						<SeasonScore onScoreTotalChange={ setSeasonOneScore } />
+						<SeasonScore onScoreTotalChange={ setSeasonTwoScore } />
+						<SeasonScore onScoreTotalChange={ setSeasonThreeScore } />
+						<SeasonScore onScoreTotalChange={ setSeasonFourScore } />
+					</div>
+					<div className={ styles.totalScore }>
+						{ seasonOneScore + seasonTwoScore + seasonThreeScore + seasonFourScore }
+					</div>
 				</div>
 			</main>
 		</>

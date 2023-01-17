@@ -64,3 +64,39 @@
 .selected {
 	background-color: rgb(121, 88, 3);
 }
+
+.scoreBoard {
+	display: flex;
+	flex-direction:row;
+}
+
+.scoreBoard .seasonScore {
+	display: flex;
+	flex-direction: row;
+}
+
+.scoreBoard .seasonScoreTotal {
+	padding: 1em;
+	text-align: center;
+}
+
+.scoreBoard .seasonScores {
+	display: flex;
+	flex-direction: row;
+	gap: 1em;
+}
+
+.scoreBoard .totalScore {
+	padding: 1em;
+	text-align: center;
+}
+
+.scoreBoard input {
+	width: 35px;
+}
+
+.scoreBoard .seasonScoreComponents {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+}
