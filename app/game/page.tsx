@@ -45,10 +45,12 @@ type GameBoard = {
 }
 
 function loadOrInitGame(): GameBoard {
-	const board = localStorage.getItem( 'board' );
+	if ( typeof localStorage !== 'undefined' ) {
+		const board = localStorage.getItem( 'board' );
 
-	if ( board ) {
-		return JSON.parse( board );
+		if ( board ) {
+			return JSON.parse( board );
+		}
 	}
 
 	return {
