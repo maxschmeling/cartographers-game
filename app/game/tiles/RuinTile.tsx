@@ -14,7 +14,7 @@ export default function RuinTile( { type, row, column, onClick }: Props ) {
 			className={ [ styles.tile, styles.ruin, type && styles[ type ] ].join(' ') }
 			onClick={ () => onClick( row, column ) }
 		>
-			R
+			<img src="/ruins.svg" alt="ruins" width="20px" height="20px" />
 		</button>
 	)
 }
