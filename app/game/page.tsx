@@ -197,6 +197,8 @@ export default function Game() {
 	}
 
 	function toggleTile(row: number, column: number) {
+		if ( !board) return;
+
 		const tile = board.selections.find(s => s.row === row && s.column === column);
 
 		if (!tile || tile.type !== brush) {
