@@ -141,7 +141,7 @@ function gameReducer(state: GameBoard | null, action: GameBoardAction): GameBoar
 			break;
 		case 'clear-board':
 			localStorage.removeItem('board');
-			newBoard = loadOrInitGame();
+			newBoard = loadOrInitGame()!;
 			break;
 	}
 
