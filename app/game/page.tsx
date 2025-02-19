@@ -103,6 +103,8 @@ function mountainIsSurrounded(selections: TileSelection[], mountain: [number, nu
 }
 
 function gameReducer(state: GameBoard | null, action: GameBoardAction): GameBoard | null {
+	if ( !state ) return null;
+
 	let newBoard = { ...state };
 
 	switch (action.type) {
