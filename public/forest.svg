@@ -1,0 +1,9 @@
+<!-- Forest (Trees) -->
+  <g transform="translate(30,30)">
+    <circle cx="35" cy="35" r="20"/>
+    <circle cx="85" cy="35" r="20"/>
+    <circle cx="60" cy="75" r="20"/>
+    <line x1="60" y1="95" x2="60" y2="130" stroke-linecap="round"/>
+    <line x1="35" y1="50" x2="60" y2="110"/>
+    <line x1="85" y1="50" x2="60" y2="110"/>
+  </g>

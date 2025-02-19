@@ -1,0 +1,8 @@
+ <!-- Farmland (Diagonal Lines) -->
+  <g transform="translate(350,30)">
+    <line x1="0" y1="120" x2="120" y2="0"/>
+    <line x1="20" y1="120" x2="140" y2="0"/>
+    <line x1="40" y1="120" x2="160" y2="0"/>
+    <line x1="60" y1="120" x2="180" y2="0"/>
+    <line x1="80" y1="120" x2="200" y2="0"/>
+  </g>
