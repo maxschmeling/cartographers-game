@@ -11,22 +11,6 @@ import Coin from './Coin';
 import SeasonScore from './SeasonScore';
 import { BoardType, boardConfigs } from './boardConfigs';
 
-const ruins: Array<[number, number]> = [
-	[5, 1],
-	[1, 2],
-	[9, 2],
-	[5, 9],
-	[9, 8],
-	[1, 8]
-];
-const mountains: Array<[number, number]> = [
-	[3, 1],
-	[2, 8],
-	[5, 5],
-	[8, 2],
-	[7, 9],
-];
-
 type SeasonScore = {
 	edictOne: number;
 	edictTwo: number;

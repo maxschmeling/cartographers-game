@@ -31,7 +31,12 @@ export const defaultBoard: BoardConfig = {
 };
 
 // Chasm board configuration (board B with blocked spaces and coin mountains)
-// Based on the reference image, the chasm is an irregular shape in the center-left
+// This board features an irregular chasm area in the center-left portion of the map
+// that creates blocked/impassable spaces, along with 5 mountains that have coin markers.
+// Layout based on the official Cartographers board B design:
+// - Chasm occupies rows 3-7, columns 1-5 in an irregular pattern
+// - 5 mountains with coins at positions: [2,1], [7,1], [1,4], [7,6], [1,8]
+// - No ruins on this board variant
 // Coordinates are [column, row] where (0,0) is top-left
 export const chasmBoard: BoardConfig = {
 	ruins: [],
