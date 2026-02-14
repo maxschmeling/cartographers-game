@@ -1,78 +1,235 @@
-.tileBoard {
-	display: grid;
-	grid-template-columns: repeat(11, 1fr);
-	grid-template-rows: repeat(11, 1fr);
-	grid-gap: 2px;
-	aspect-ratio: 1 / 1;
-	margin-top: 1em;
-	margin-bottom: 1em;
-}
-
-.tile {
-	background-color: lightgray;
-	border-radius: 2px;
-	border: 0;
-}
-
-.forest { background-color: green; }
-.village { background-color: red; }
-.farm { background-color: yellow; }
-.water { background-color: blue; }
-.monster { background-color: purple; }
-
-.brushes {
+/* Main container - centers and constrains the game */
+.container {
+	min-height: 100vh;
 	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
+	justify-content: center;
+	align-items: center;
+	padding: 1rem;
+	background: linear-gradient(
+		to bottom,
+		var(--parchment-light),
+		var(--parchment-bg)
+	);
 }
 
-.brushes > button {
-	border: 0;
-	border-radius: 5px;
-	padding: 0.5em;
-	margin: 0.5em;
+/* Game sheet - the main card-like container */
+.gameSheet {
+	width: 100%;
+	max-width: 900px;
+	background: var(--parchment-bg);
+	border: 3px solid var(--border-brown);
+	box-shadow: 
+		0 4px 8px rgba(0, 0, 0, 0.2),
+		inset 0 0 60px rgba(0, 0, 0, 0.05);
+	padding: 1.5rem;
+	border-radius: 4px;
+}
+
+/* Header styling */
+.header {
+	margin-bottom: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: 2px solid var(--border-brown);
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.headerFields {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.field {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.field label {
+	font-weight: bold;
+	font-size: 0.8rem;
+	letter-spacing: 0.5px;
+	color: var(--border-dark);
+	min-width: 120px;
+	text-transform: uppercase;
+}
+
+.field input {
+	flex: 1;
+	border: none;
+	border-bottom: 1px solid var(--border-brown);
+	background: transparent;
+	padding: 0.25rem 0.5rem;
+	font-size: 0.9rem;
+	color: var(--border-dark);
+}
+
+.field input:focus {
+	outline: none;
+	border-bottom: 2px solid var(--border-dark);
+}
+
+.headerActions {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	flex-wrap: wrap;
 }
 
 .boardSelector {
 	display: flex;
 	align-items: center;
-	gap: 0.5em;
-	margin-bottom: 0.5em;
+	gap: 0.5rem;
 }
 
 .boardSelector label {
 	font-weight: bold;
+	font-size: 0.9rem;
+	color: var(--border-dark);
 }
 
 .boardSelector select {
-	padding: 0.5em;
-	border-radius: 5px;
-	border: 1px solid #ccc;
-	background-color: white;
+	padding: 0.4rem 0.8rem;
+	border-radius: 4px;
+	border: 2px solid var(--border-brown);
+	background: var(--parchment-light);
+	color: var(--border-dark);
 	cursor: pointer;
+	font-size: 0.9rem;
 }
 
-.erase {
-	background-color: white;
+.clearButton {
+	padding: 0.4rem 1rem;
+	border: 2px solid var(--border-brown);
+	background: var(--border-brown);
+	color: var(--parchment-light);
+	border-radius: 4px;
+	cursor: pointer;
+	font-weight: bold;
+	font-size: 0.9rem;
+	transition: all 0.2s;
 }
 
-.tile.mountain {
-	background: rgb(125, 120, 120);
-	color: white;
+.clearButton:hover {
+	background: var(--border-dark);
+	border-color: var(--border-dark);
+}
+
+/* Main content area */
+.mainContent {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+/* Board container with border */
+.boardContainer {
+	background: var(--parchment-light);
+	padding: 1rem;
+	border: 3px double var(--border-brown);
+	border-radius: 4px;
+}
+
+/* Tile board - the game grid */
+.tileBoard {
+	display: grid;
+	grid-template-columns: repeat(11, 1fr);
+	grid-template-rows: repeat(11, 1fr);
+	gap: 1px;
+	aspect-ratio: 1 / 1;
+	width: 100%;
+	background: var(--border-brown);
+	border: 2px solid var(--border-brown);
+}
+
+/* Base tile styling */
+.tile {
+	background: #d4c4a8;
+	border: none;
+	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-weight: lighter;
-	border: 1px solid var(--mountain-border);
+	position: relative;
+	transition: all 0.15s;
+}
+
+.tile:hover {
+	filter: brightness(1.1);
+}
+
+/* Terrain type colors - more realistic/muted */
+.forest { 
+	background: #5a7a3d;
+	color: white;
+}
+
+.village { 
+	background: #8b4f4f;
+	color: white;
+}
+
+.farm { 
+	background: #d4a74e;
+	color: #4a3f35;
+}
+
+.water { 
+	background: #4a7ba7;
+	color: white;
+}
+
+.monster { 
+	background: #6b4a7a;
+	color: white;
+}
+
+/* Brush buttons */
+.brushes {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.brushes > button {
+	flex: 1;
+	min-width: 80px;
+	border: 2px solid var(--border-brown);
+	border-radius: 4px;
+	padding: 0.6rem 0.8rem;
+	font-weight: bold;
+	font-size: 0.85rem;
+	cursor: pointer;
+	transition: all 0.2s;
+	color: white;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.brushes > button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Mountain tile */
+.tile.mountain {
+	background: rgb(125, 120, 120);
+	color: white;
+	border: 1px solid var(--border-brown);
 	padding: 4px;
+	cursor: default;
 }
 
 .tile.mountain > .inner {
 	width: 100%;
 	height: 100%;
-	background-image: url( /mountain.png );
+	background-image: url(/mountain.png);
 	background-repeat: no-repeat;
-  background-size: contain;
+	background-size: contain;
+	background-position: center;
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -82,18 +239,16 @@
 .mountainCoin {
 	width: 30%;
 	height: 30%;
-	background-color: gold;
+	background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #d4af37 100%);
 	border-radius: 50%;
 	border: 2px solid rgb(184, 134, 11);
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Blocked tile */
 .tile.blocked {
 	background: rgb(80, 70, 60);
 	color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	border: 1px solid rgb(60, 50, 40);
 	padding: 4px;
 	cursor: not-allowed;
@@ -106,57 +261,155 @@
 	border-radius: 2px;
 }
 
+/* Coins display */
 .coins {
 	display: flex;
 	flex-direction: row;
-	justify-content: space-around;
+	justify-content: center;
+	gap: 0.25rem;
+	padding: 0.5rem;
+	background: var(--parchment-light);
+	border: 2px solid var(--border-brown);
+	border-radius: 4px;
 }
 
 .coin {
-	background-color: yellow;
-	border-radius: 100;
-	margin: 4px;
-	aspect-ratio: 1 / 1;
-	flex-grow: 1;
+	background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #d4af37 100%);
+	border: 2px solid rgb(184, 134, 11);
+	border-radius: 50%;
+	width: 35px;
+	height: 35px;
+	cursor: pointer;
+	transition: all 0.2s;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.selected {
-	background-color: rgb(121, 88, 3);
+.coin:hover {
+	transform: scale(1.1);
 }
 
+.coin.selected {
+	background: linear-gradient(135deg, #b8860b 0%, #daa520 50%, #8b6914 100%);
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Score board */
 .scoreBoard {
 	display: flex;
-	flex-direction:row;
+	flex-direction: row;
+	gap: 1rem;
+	background: var(--parchment-light);
+	padding: 1rem;
+	border: 2px solid var(--border-brown);
+	border-radius: 4px;
 	overflow-x: auto;
 }
 
 .scoreBoard .seasonScore {
 	display: flex;
 	flex-direction: row;
+	gap: 0.5rem;
+	min-width: 120px;
 }
 
 .scoreBoard .seasonScoreTotal {
-	padding: 1em;
+	padding: 0.5rem;
 	text-align: center;
+	font-weight: bold;
+	font-size: 1.1rem;
+	color: var(--border-dark);
+	background: var(--parchment-bg);
+	border: 2px solid var(--border-brown);
+	border-radius: 4px;
+	min-width: 50px;
 }
 
 .scoreBoard .seasonScores {
 	display: flex;
 	flex-direction: row;
-	gap: 1em;
+	gap: 0.5rem;
+	flex: 1;
 }
 
 .scoreBoard .totalScore {
-	padding: 1em;
+	padding: 0.5rem 1rem;
 	text-align: center;
+	font-weight: bold;
+	font-size: 1.3rem;
+	color: white;
+	background: var(--border-brown);
+	border: 2px solid var(--border-dark);
+	border-radius: 4px;
+	min-width: 60px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .scoreBoard input {
-	width: 35px;
+	width: 45px;
+	padding: 0.3rem;
+	border: 1px solid var(--border-brown);
+	border-radius: 3px;
+	text-align: center;
+	background: white;
+	font-size: 0.9rem;
+	color: var(--border-dark);
+}
+
+.scoreBoard input:focus {
+	outline: none;
+	border: 2px solid var(--border-dark);
 }
 
 .scoreBoard .seasonScoreComponents {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: 1fr 1fr;
+	gap: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.container {
+		padding: 0.5rem;
+	}
+
+	.gameSheet {
+		padding: 1rem;
+	}
+
+	.brushes {
+		flex-direction: column;
+	}
+
+	.brushes > button {
+		min-width: 100%;
+	}
+
+	.scoreBoard {
+		flex-direction: column;
+	}
+
+	.scoreBoard .seasonScores {
+		flex-direction: column;
+	}
+}
+
+@media (min-width: 769px) {
+	/* Desktop - constrain board size */
+	.boardContainer {
+		max-width: 600px;
+		margin: 0 auto;
+	}
+}
+
+@media (min-width: 1024px) {
+	.gameSheet {
+		max-width: 1100px;
+	}
+
+	.boardContainer {
+		max-width: 700px;
+	}
 }

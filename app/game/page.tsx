@@ -221,68 +221,74 @@ export default function Game() {
 	}
 
 	return (
-		<>
-			<header>
-				<div>
-					<div>
-						<label>Cartographer</label>
-						<input type="text" />
+		<div className={styles.container}>
+			<div className={styles.gameSheet}>
+				<header className={styles.header}>
+					<div className={styles.headerFields}>
+						<div className={styles.field}>
+							<label>CARTOGRAPHER:</label>
+							<input type="text" />
+						</div>
+						<div className={styles.field}>
+							<label>TITLE:</label>
+							<input type="text" />
+						</div>
 					</div>
-					<div>
-						<label>Title</label>
-						<input type="text" />
+					<div className={styles.headerActions}>
+						<div className={styles.boardSelector}>
+							<label>Board:</label>
+							<select 
+								value={boardType} 
+								onChange={(e) => dispatch({ type: 'set-board-type', boardType: e.target.value as BoardType })}
+							>
+								<option value="default">Default</option>
+								<option value="chasm">Chasm (B)</option>
+							</select>
+						</div>
+						<button className={styles.clearButton} onClick={() => dispatch({ type: 'clear-board' })}>Clear</button>
 					</div>
-				</div>
-				<button onClick={() => dispatch({ type: 'clear-board' })}>Clear</button>
-			</header>
-			<main>
-				<div className={styles.boardSelector}>
-					<label>Board:</label>
-					<select 
-						value={boardType} 
-						onChange={(e) => dispatch({ type: 'set-board-type', boardType: e.target.value as BoardType })}
-					>
-						<option value="default">Default</option>
-						<option value="chasm">Chasm (B)</option>
-					</select>
-				</div>
-				<div className={styles.tileBoard}>
-					{gameBoard}
-				</div>
-				<div className={styles.brushes}>
-					<button className={styles.forest} onClick={() => setBrush("forest")}>Forest</button>
-					<button className={styles.village} onClick={() => setBrush("village")}>Village</button>
-					<button className={styles.farm} onClick={() => setBrush("farm")}>Farm</button>
-					<button className={styles.water} onClick={() => setBrush("water")}>Water</button>
-					<button className={styles.monster} onClick={() => setBrush("monster")}>Monster</button>
-				</div>
-				<div className={styles.coins}>
-					{[...Array(14)].map(
-						(_, index) => (
-							<Coin key={index} selected={board.coinCount > index} onClick={
-								() => {
-									if (board.coinCount === index + 1) {
-										dispatch({ type: "set-coin-count", coinCount: index });
-									} else {
-										dispatch({ type: "set-coin-count", coinCount: index + 1 });
+				</header>
+				<main className={styles.mainContent}>
+					<div className={styles.boardContainer}>
+						<div className={styles.tileBoard}>
+							{gameBoard}
+						</div>
+					</div>
+					<div className={styles.brushes}>
+						<button className={styles.forest} onClick={() => setBrush("forest")}>Forest</button>
+						<button className={styles.village} onClick={() => setBrush("village")}>Village</button>
+						<button className={styles.farm} onClick={() => setBrush("farm")}>Farm</button>
+						<button className={styles.water} onClick={() => setBrush("water")}>Water</button>
+						<button className={styles.monster} onClick={() => setBrush("monster")}>Monster</button>
+					</div>
+					<div className={styles.coins}>
+						{[...Array(14)].map(
+							(_, index) => (
+								<Coin key={index} selected={board.coinCount > index} onClick={
+									() => {
+										if (board.coinCount === index + 1) {
+											dispatch({ type: "set-coin-count", coinCount: index });
+										} else {
+											dispatch({ type: "set-coin-count", coinCount: index + 1 });
+										}
 									}
-								}
-							} />
-						)
-					)}
-				</div>
-				<div className={styles.scoreBoard}>
-					<div className={styles.seasonScores}>
-						<SeasonScore onScoreTotalChange={setSeasonOneScore} />
-						<SeasonScore onScoreTotalChange={setSeasonTwoScore} />
-						<SeasonScore onScoreTotalChange={setSeasonThreeScore} />
-						<SeasonScore onScoreTotalChange={setSeasonFourScore} />
+								} />
+							)
+						)}
 					</div>
-					<div className={styles.totalScore}>
-						{seasonOneScore + seasonTwoScore + seasonThreeScore + seasonFourScore}
+					<div className={styles.scoreBoard}>
+						<div className={styles.seasonScores}>
+							<SeasonScore onScoreTotalChange={setSeasonOneScore} />
+							<SeasonScore onScoreTotalChange={setSeasonTwoScore} />
+							<SeasonScore onScoreTotalChange={setSeasonThreeScore} />
+							<SeasonScore onScoreTotalChange={setSeasonFourScore} />
+						</div>
+						<div className={styles.totalScore}>
+							{seasonOneScore + seasonTwoScore + seasonThreeScore + seasonFourScore}
+						</div>
 					</div>
-				</div>
-			</main>
-		</>
+				</main>
+			</div>
+		</div>
 	);
 }
