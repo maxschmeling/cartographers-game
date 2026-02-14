@@ -6,8 +6,10 @@ import { TileType } from './tiles';
 import MountainTile from './tiles/MountainTile';
 import RuinTile from './tiles/RuinTile';
 import StandardTile from './tiles/StandardTile';
+import BlockedTile from './tiles/BlockedTile';
 import Coin from './Coin';
 import SeasonScore from './SeasonScore';
+import { BoardType, boardConfigs } from './boardConfigs';
 
 const ruins: Array<[number, number]> = [
 	[5, 1],
@@ -43,6 +45,7 @@ type GameBoard = {
 	selections: TileSelection[];
 	coinCount: number;
 	seasonScores: SeasonScore[];
+	boardType?: BoardType;
 };
 
 function loadOrInitGame(): GameBoard | null {
@@ -50,7 +53,12 @@ function loadOrInitGame(): GameBoard | null {
 		const board = localStorage.getItem('board');
 
 		if (board) {
-			return JSON.parse(board);
+			const parsed = JSON.parse(board);
+			// Ensure boardType exists (backward compatibility)
+			if (!parsed.boardType) {
+				parsed.boardType = 'default';
+			}
+			return parsed;
 		}
 
 		return {
@@ -62,7 +70,8 @@ function loadOrInitGame(): GameBoard | null {
 				{ edictOne: 0, edictTwo: 0, coinCount: 0, monsterCount: 0 },
 				{ edictOne: 0, edictTwo: 0, coinCount: 0, monsterCount: 0 },
 				{ edictOne: 0, edictTwo: 0, coinCount: 0, monsterCount: 0 },
-			]
+			],
+			boardType: 'default'
 		};
 	}
 
@@ -74,10 +83,12 @@ type GameBoardAction =
 	| { type: 'clear-tile', row: number, column: number }
 	| { type: 'set-season-score', season: number, score: SeasonScore }
 	| { type: 'set-coin-count', coinCount: number }
+	| { type: 'set-board-type', boardType: BoardType }
 	| { type: 'clear-board' };
 
-function findAdjacentMountain(row: number, column: number): [number, number] | null {
-	const adjacentMountains = mountains.filter(mountain => {
+function findAdjacentMountain(row: number, column: number, boardType: BoardType): [number, number] | null {
+	const config = boardConfigs[boardType];
+	const adjacentMountains = config.mountains.filter(mountain => {
 		const rowDiff = Math.abs(mountain[1] - row);
 		const columnDiff = Math.abs(mountain[0] - column);
 
@@ -112,7 +123,7 @@ function gameReducer(state: GameBoard | null, action: GameBoardAction): GameBoar
 			newBoard.selections = newBoard.selections.filter(s => s.row !== action.row || s.column !== action.column);
 			newBoard.selections = [...newBoard.selections, { row: action.row, column: action.column, type: action.tileType }];
 
-			const selectTileAdjacentMountain = findAdjacentMountain(action.row, action.column);
+			const selectTileAdjacentMountain = findAdjacentMountain(action.row, action.column, newBoard.boardType || 'default');
 
 			if (selectTileAdjacentMountain && mountainIsSurrounded(newBoard.selections, selectTileAdjacentMountain)) {
 				newBoard.coinCount++;
@@ -122,7 +133,7 @@ function gameReducer(state: GameBoard | null, action: GameBoardAction): GameBoar
 		case 'clear-tile':
 			newBoard.selections = newBoard.selections.filter(s => s.row !== action.row || s.column !== action.column);
 
-			const clearTileAdjacentMountain = findAdjacentMountain(action.row, action.column);
+			const clearTileAdjacentMountain = findAdjacentMountain(action.row, action.column, newBoard.boardType || 'default');
 
 			if (
 				clearTileAdjacentMountain &&
@@ -138,6 +149,11 @@ function gameReducer(state: GameBoard | null, action: GameBoardAction): GameBoar
 			break;
 		case 'set-coin-count':
 			newBoard.coinCount = action.coinCount;
+			break;
+		case 'set-board-type':
+			newBoard.boardType = action.boardType;
+			newBoard.selections = [];
+			newBoard.coinCount = 0;
 			break;
 		case 'clear-board':
 			localStorage.removeItem('board');
@@ -162,6 +178,8 @@ export default function Game() {
 
 	if (!board) return null;
 
+	const boardType = board.boardType || 'default';
+	const config = boardConfigs[boardType];
 	const gameBoard = [];
 
 	for (let row = 0; row < 11; row++) {
@@ -170,7 +188,12 @@ export default function Game() {
 
 			const type = board.selections.find(s => s.row === row && s.column === column)?.type ?? null;
 
-			if (ruins.some(ruin => ruin[0] === column && ruin[1] === row)) {
+			// Check if this is a blocked space
+			if (config.blockedSpaces.some(blocked => blocked[0] === column && blocked[1] === row)) {
+				gameBoard.push(<BlockedTile key={key} />);
+			}
+			// Check if this is a ruin
+			else if (config.ruins.some(ruin => ruin[0] === column && ruin[1] === row)) {
 				gameBoard.push(
 					<RuinTile
 						key={key}
@@ -180,9 +203,14 @@ export default function Game() {
 						onClick={toggleTile}
 					/>
 				);
-			} else if (mountains.some(mountain => mountain[0] === column && mountain[1] === row)) {
-				gameBoard.push(<MountainTile key={key} />);
-			} else {
+			}
+			// Check if this is a mountain
+			else if (config.mountains.some(mountain => mountain[0] === column && mountain[1] === row)) {
+				const hasCoin = config.coinMountains.some(coinMtn => coinMtn[0] === column && coinMtn[1] === row);
+				gameBoard.push(<MountainTile key={key} hasCoin={hasCoin} />);
+			}
+			// Standard tile
+			else {
 				gameBoard.push(
 					<StandardTile
 						key={key}
@@ -224,6 +252,16 @@ export default function Game() {
 				<button onClick={() => dispatch({ type: 'clear-board' })}>Clear</button>
 			</header>
 			<main>
+				<div className={styles.boardSelector}>
+					<label>Board:</label>
+					<select 
+						value={boardType} 
+						onChange={(e) => dispatch({ type: 'set-board-type', boardType: e.target.value as BoardType })}
+					>
+						<option value="default">Default</option>
+						<option value="chasm">Chasm (B)</option>
+					</select>
+				</div>
 				<div className={styles.tileBoard}>
 					{gameBoard}
 				</div>
