@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useReducer, useEffect, useRef } from 'react';
+import { useState, useReducer, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '../page.module.css';
 import { TileType } from '../tiles';
@@ -17,6 +17,7 @@ import {
   saveLastCartographerName,
 } from '../../lib/gameStorage';
 import OpponentsPanel from '../OpponentsPanel';
+import { GAME_PIECES, GamePiece, rotatePiece, flipPiece } from '../pieces';
 
 type SeasonScoreType = {
   edictOne: number;
@@ -113,6 +114,35 @@ export default function GamePage({ params }: { params: { id: string } }) {
   const [seasonThreeScore, setSeasonThreeScore] = useState(0);
   const [seasonFourScore, setSeasonFourScore] = useState(0);
 
+  // Piece selection state
+  const [selectedPiece, setSelectedPiece] = useState<GamePiece | null>(null);
+  const [currentShape, setCurrentShape] = useState<[number, number][]>([]);
+  const [hoverCell, setHoverCell] = useState<[number, number] | null>(null);
+  const [piecesOpen, setPiecesOpen] = useState(false);
+
+  const handleRotate = useCallback(() => {
+    if (currentShape.length > 0) {
+      setCurrentShape(prev => rotatePiece(prev));
+    }
+  }, [currentShape.length]);
+
+  const handleFlip = useCallback(() => {
+    if (currentShape.length > 0) {
+      setCurrentShape(prev => flipPiece(prev));
+    }
+  }, [currentShape.length]);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'r' || e.key === 'R') handleRotate();
+      if (e.key === 'f' || e.key === 'F') handleFlip();
+      if (e.key === 'Escape') { setSelectedPiece(null); setCurrentShape([]); setHoverCell(null); }
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [handleRotate, handleFlip]);
+
   // We need to re-create reducer with correct boardType after load.
   // Use a ref + force re-mount approach.
   const [boardType, setBoardType] = useState<BoardType>('default');
@@ -175,33 +205,92 @@ export default function GamePage({ params }: { params: { id: string } }) {
   if (!loaded || !meta || !gameState) return null;
 
   const config = boardConfigs[meta.boardType];
+
+  // Compute preview cells for piece placement
+  const previewCells = new Set<string>();
+  let previewValid = true;
+  if (selectedPiece && hoverCell && currentShape.length > 0) {
+    for (const [dr, dc] of currentShape) {
+      const r = hoverCell[0] + dr;
+      const c = hoverCell[1] + dc;
+      if (r < 0 || r >= 11 || c < 0 || c >= 11) { previewValid = false; break; }
+      if (config.blockedSpaces.some(b => b[0] === c && b[1] === r) ||
+          config.mountains.some(m => m[0] === c && m[1] === r) ||
+          gameState.selections.some(s => s.row === r && s.column === c)) { previewValid = false; break; }
+      previewCells.add(`${r},${c}`);
+    }
+    if (!previewValid) previewCells.clear();
+  }
+
   const gameBoard = [];
 
   for (let row = 0; row < 11; row++) {
     for (let column = 0; column < 11; column++) {
       const key = `${row}x${column}`;
       const type = gameState.selections.find(s => s.row === row && s.column === column)?.type as TileType ?? null;
+      const isPreview = previewCells.has(`${row},${column}`);
 
       if (config.blockedSpaces.some(b => b[0] === column && b[1] === row)) {
         gameBoard.push(<BlockedTile key={key} />);
       } else if (config.ruins.some(r => r[0] === column && r[1] === row)) {
-        gameBoard.push(<RuinTile key={key} row={row} column={column} type={type} onClick={toggleTile} />);
+        gameBoard.push(
+          <RuinTile key={key} row={row} column={column} type={type}
+            onClick={handleTileClick}
+            preview={isPreview} previewValid={previewValid}
+            onMouseEnter={() => handleTileHover(row, column)}
+          />
+        );
       } else if (config.mountains.some(m => m[0] === column && m[1] === row)) {
         const hasCoin = config.coinMountains.some(c => c[0] === column && c[1] === row);
         gameBoard.push(<MountainTile key={key} hasCoin={hasCoin} />);
       } else {
-        gameBoard.push(<StandardTile key={key} row={row} column={column} type={type} onClick={toggleTile} />);
+        gameBoard.push(
+          <StandardTile key={key} row={row} column={column} type={type}
+            onClick={handleTileClick}
+            preview={isPreview} previewValid={previewValid}
+            onMouseEnter={() => handleTileHover(row, column)}
+          />
+        );
       }
     }
   }
 
-  function toggleTile(row: number, column: number) {
+  function handleTileHover(row: number, column: number) {
+    if (selectedPiece) {
+      setHoverCell([row, column]);
+    }
+  }
+
+  function handleTileClick(row: number, column: number) {
     if (!gameState) return;
+
+    if (selectedPiece && currentShape.length > 0) {
+      if (!previewValid || previewCells.size === 0) return;
+      for (const [dr, dc] of currentShape) {
+        const r = row + dr;
+        const c = column + dc;
+        dispatchAction({ type: 'select-tile', row: r, column: c, tileType: brush });
+      }
+      return;
+    }
+
     const tile = gameState.selections.find(s => s.row === row && s.column === column);
     if (!tile || tile.type !== brush) {
       dispatchAction({ type: 'select-tile', row, column, tileType: brush });
     } else {
       dispatchAction({ type: 'clear-tile', row, column });
+    }
+  }
+
+  function selectPiece(piece: GamePiece | null) {
+    if (piece) {
+      setSelectedPiece(piece);
+      setCurrentShape([...piece.cells]);
+      setPiecesOpen(false);
+    } else {
+      setSelectedPiece(null);
+      setCurrentShape([]);
+      setHoverCell(null);
     }
   }
 
@@ -277,7 +366,7 @@ export default function GamePage({ params }: { params: { id: string } }) {
 
         <main className={styles.mainContent}>
           <div className={styles.boardContainer}>
-            <div className={styles.tileBoard}>
+            <div className={styles.tileBoard} onMouseLeave={() => setHoverCell(null)}>
               {gameBoard}
             </div>
           </div>
@@ -288,6 +377,52 @@ export default function GamePage({ params }: { params: { id: string } }) {
             <button className={styles.water} onClick={() => setBrush("water")}>Water</button>
             <button className={styles.monster} onClick={() => setBrush("monster")}>Monster</button>
           </div>
+          {/* Pieces section */}
+          <div className={styles.piecesSection}>
+            <div className={styles.piecesHeader}>
+              <button className={styles.piecesToggle} onClick={() => setPiecesOpen(!piecesOpen)}>
+                {piecesOpen ? '▾' : '▸'} Pieces
+              </button>
+              {selectedPiece && (
+                <div className={styles.pieceControls}>
+                  <span className={styles.pieceLabel}>{selectedPiece.name}</span>
+                  <button className={styles.pieceBtn} onClick={handleRotate} title="Rotate (R)">↻</button>
+                  <button className={styles.pieceBtn} onClick={handleFlip} title="Flip (F)">↔</button>
+                  <button className={styles.pieceBtn} onClick={() => selectPiece(null)} title="Deselect (Esc)">✕</button>
+                </div>
+              )}
+            </div>
+            {piecesOpen && (
+              <div className={styles.piecesGrid}>
+                {GAME_PIECES.map((piece) => {
+                  const maxR = Math.max(...piece.cells.map(([r]) => r));
+                  const maxC = Math.max(...piece.cells.map(([, c]) => c));
+                  const cells = new Set(piece.cells.map(([r, c]) => `${r},${c}`));
+                  return (
+                    <button
+                      key={piece.name}
+                      className={`${styles.pieceCard} ${selectedPiece?.name === piece.name ? styles.pieceCardActive : ''}`}
+                      onClick={() => selectPiece(piece)}
+                      title={piece.name}
+                    >
+                      <div className={styles.pieceMini} style={{
+                        gridTemplateColumns: `repeat(${maxC + 1}, 1fr)`,
+                        gridTemplateRows: `repeat(${maxR + 1}, 1fr)`,
+                      }}>
+                        {Array.from({ length: (maxR + 1) * (maxC + 1) }, (_, i) => {
+                          const r = Math.floor(i / (maxC + 1));
+                          const c = i % (maxC + 1);
+                          return <div key={i} className={`${styles.miniCell} ${cells.has(`${r},${c}`) ? styles.miniCellFilled : ''}`} />;
+                        })}
+                      </div>
+                      <span className={styles.pieceName}>{piece.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           <div className={styles.coins}>
             {[...Array(14)].map((_, index) => (
               <Coin key={index} selected={gameState.coinCount > index} onClick={() => {
