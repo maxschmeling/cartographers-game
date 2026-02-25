@@ -2,6 +2,12 @@ import { BoardType } from '../game/boardConfigs';
 
 export type GameStatus = 'active' | 'completed';
 
+export type OpponentSeat = {
+  name: string;
+  position: number; // 1-based seat number around the table
+};
+
+// Keep old type for migration compat
 export type Opponent = {
   name: string;
   position: 'top' | 'right' | 'bottom' | 'left';
@@ -26,7 +32,10 @@ export type GameMeta = {
   cartographer: string;
   boardType: BoardType;
   status: GameStatus;
-  opponents: Opponent[];
+  opponents: Opponent[]; // legacy
+  seats: OpponentSeat[]; // new: numbered seats
+  playerCount: number;
+  playedAt: string; // date the game was played (user-editable)
   createdAt: string;
   updatedAt: string;
 };
@@ -39,6 +48,17 @@ export type GameState = {
 
 const GAMES_INDEX_KEY = 'cartographers-games';
 const GAME_PREFIX = 'cartographers-game-';
+const LAST_CARTOGRAPHER_KEY = 'cartographers-last-name';
+
+export function getLastCartographerName(): string {
+  if (typeof localStorage === 'undefined') return '';
+  return localStorage.getItem(LAST_CARTOGRAPHER_KEY) || '';
+}
+
+export function saveLastCartographerName(name: string) {
+  if (typeof localStorage === 'undefined') return;
+  localStorage.setItem(LAST_CARTOGRAPHER_KEY, name);
+}
 
 export function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -93,9 +113,12 @@ export function updateGameMeta(id: string, updates: Partial<GameMeta>) {
   }
 }
 
-export function createGame(title: string, cartographer: string, boardType: BoardType): string {
+export function createGame(title: string, cartographer: string, boardType: BoardType, playedAt?: string): string {
   const id = generateId();
   const now = new Date().toISOString();
+  if (cartographer.trim()) {
+    saveLastCartographerName(cartographer.trim());
+  }
   const meta: GameMeta = {
     id,
     title,
@@ -103,6 +126,9 @@ export function createGame(title: string, cartographer: string, boardType: Board
     boardType,
     status: 'active',
     opponents: [],
+    seats: [],
+    playerCount: 2,
+    playedAt: playedAt || new Date().toISOString().split('T')[0],
     createdAt: now,
     updatedAt: now,
   };
@@ -126,7 +152,10 @@ export function createGame(title: string, cartographer: string, boardType: Board
 export function getAllOpponentNames(): string[] {
   const games = getGamesList();
   const names = new Set<string>();
-  games.forEach(g => g.opponents.forEach(o => names.add(o.name)));
+  games.forEach(g => {
+    g.opponents?.forEach(o => names.add(o.name));
+    g.seats?.forEach(s => { if (s.name) names.add(s.name); });
+  });
   return Array.from(names).sort();
 }
 

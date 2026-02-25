@@ -12,10 +12,11 @@ import Coin from '../Coin';
 import SeasonScore from '../SeasonScore';
 import { BoardType, boardConfigs } from '../boardConfigs';
 import {
-  GameMeta, GameState, Opponent,
+  GameMeta, GameState,
   getGameMeta, getGameState, saveGameState, updateGameMeta,
-  getAllOpponentNames,
+  saveLastCartographerName,
 } from '../../lib/gameStorage';
+import OpponentsPanel from '../OpponentsPanel';
 
 type SeasonScoreType = {
   edictOne: number;
@@ -105,12 +106,6 @@ export default function GamePage({ params }: { params: { id: string } }) {
     createReducer(id, 'default'), // placeholder, replaced once loaded
     null
   );
-
-  // Opponent state
-  const [newOpponentName, setNewOpponentName] = useState('');
-  const [newOpponentPos, setNewOpponentPos] = useState<Opponent['position']>('top');
-  const [opponentSuggestions, setOpponentSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [brush, setBrush] = useState<TileType>('village');
   const [seasonOneScore, setSeasonOneScore] = useState(0);
@@ -210,44 +205,12 @@ export default function GamePage({ params }: { params: { id: string } }) {
     }
   }
 
-  function handleAddOpponent() {
-    if (!newOpponentName.trim() || !meta) return;
-    const opponents = [...meta.opponents, { name: newOpponentName.trim(), position: newOpponentPos }];
-    updateGameMeta(id, { opponents });
-    setMeta({ ...meta, opponents });
-    setNewOpponentName('');
-    setShowSuggestions(false);
-  }
-
-  function handleRemoveOpponent(index: number) {
-    if (!meta) return;
-    const opponents = meta.opponents.filter((_, i) => i !== index);
-    updateGameMeta(id, { opponents });
-    setMeta({ ...meta, opponents });
-  }
-
   function toggleStatus() {
     if (!meta) return;
     const newStatus = meta.status === 'active' ? 'completed' : 'active';
     updateGameMeta(id, { status: newStatus });
     setMeta({ ...meta, status: newStatus });
   }
-
-  function handleOpponentInput(val: string) {
-    setNewOpponentName(val);
-    if (val.trim()) {
-      const all = getAllOpponentNames();
-      const filtered = all.filter(n => n.toLowerCase().includes(val.toLowerCase()));
-      setOpponentSuggestions(filtered);
-      setShowSuggestions(filtered.length > 0);
-    } else {
-      setShowSuggestions(false);
-    }
-  }
-
-  const positionLabels: Record<Opponent['position'], string> = {
-    top: '↑ Top', right: '→ Right', bottom: '↓ Bottom', left: '← Left',
-  };
 
   return (
     <div className={styles.container}>
@@ -271,6 +234,7 @@ export default function GamePage({ params }: { params: { id: string } }) {
                 onChange={e => {
                   const val = e.target.value;
                   updateGameMeta(id, { cartographer: val });
+                  if (val.trim()) saveLastCartographerName(val.trim());
                   setMeta({ ...meta, cartographer: val });
                 }}
               />
@@ -292,53 +256,24 @@ export default function GamePage({ params }: { params: { id: string } }) {
             <div className={styles.boardLabel}>
               Board: <strong>{meta.boardType === 'chasm' ? 'Chasm (B)' : 'Default'}</strong>
             </div>
+            <div className={styles.field} style={{ marginLeft: 'auto' }}>
+              <label>DATE:</label>
+              <input
+                type="date"
+                value={meta.playedAt || ''}
+                onChange={e => {
+                  const val = e.target.value;
+                  updateGameMeta(id, { playedAt: val });
+                  setMeta({ ...meta, playedAt: val });
+                }}
+                style={{ width: 'auto' }}
+              />
+            </div>
           </div>
         </header>
 
-        {/* Opponents */}
-        <div className={styles.opponentsSection}>
-          <div className={styles.opponentsHeader}>Opponents</div>
-          <div className={styles.opponentsList}>
-            {meta.opponents.map((opp, i) => (
-              <div key={i} className={styles.opponentTag}>
-                <span className={styles.opponentPos}>{positionLabels[opp.position]}</span>
-                <span>{opp.name}</span>
-                <button className={styles.removeOpponent} onClick={() => handleRemoveOpponent(i)}>×</button>
-              </div>
-            ))}
-          </div>
-          <div className={styles.addOpponent}>
-            <div className={styles.opponentInputWrap}>
-              <input
-                type="text"
-                placeholder="Opponent name"
-                value={newOpponentName}
-                onChange={e => handleOpponentInput(e.target.value)}
-                onFocus={() => {
-                  if (newOpponentName.trim()) handleOpponentInput(newOpponentName);
-                }}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                onKeyDown={e => { if (e.key === 'Enter') handleAddOpponent(); }}
-              />
-              {showSuggestions && (
-                <div className={styles.suggestions}>
-                  {opponentSuggestions.map(s => (
-                    <div key={s} className={styles.suggestion} onMouseDown={() => { setNewOpponentName(s); setShowSuggestions(false); }}>
-                      {s}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <select value={newOpponentPos} onChange={e => setNewOpponentPos(e.target.value as Opponent['position'])}>
-              <option value="top">↑ Top</option>
-              <option value="right">→ Right</option>
-              <option value="bottom">↓ Bottom</option>
-              <option value="left">← Left</option>
-            </select>
-            <button onClick={handleAddOpponent}>Add</button>
-          </div>
-        </div>
+        {/* Players / Opponents */}
+        <OpponentsPanel meta={meta} onMetaChange={setMeta} />
 
         <main className={styles.mainContent}>
           <div className={styles.boardContainer}>

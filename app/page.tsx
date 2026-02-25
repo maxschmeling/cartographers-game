@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
-import { GameMeta, getGamesList, createGame, migrateOldBoard } from './lib/gameStorage';
+import { GameMeta, getGamesList, createGame, migrateOldBoard, getLastCartographerName } from './lib/gameStorage';
 import { BoardType } from './game/boardConfigs';
 
 export default function Home() {
@@ -13,11 +13,13 @@ export default function Home() {
   const [title, setTitle] = useState('');
   const [cartographer, setCartographer] = useState('');
   const [boardType, setBoardType] = useState<BoardType>('default');
+  const [playedAt, setPlayedAt] = useState(new Date().toISOString().split('T')[0]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     migrateOldBoard();
     setGames(getGamesList());
+    setCartographer(getLastCartographerName());
     setLoaded(true);
   }, []);
 
@@ -25,7 +27,7 @@ export default function Home() {
 
   function handleCreate() {
     if (!title.trim()) return;
-    const id = createGame(title.trim(), cartographer.trim(), boardType);
+    const id = createGame(title.trim(), cartographer.trim(), boardType, playedAt);
     router.push(`/game/${id}`);
   }
 
@@ -69,6 +71,14 @@ export default function Home() {
                 />
               </div>
               <div className={styles.formField}>
+                <label>Game Date</label>
+                <input
+                  type="date"
+                  value={playedAt}
+                  onChange={e => setPlayedAt(e.target.value)}
+                />
+              </div>
+              <div className={styles.formField}>
                 <label>Board Type</label>
                 <select value={boardType} onChange={e => setBoardType(e.target.value as BoardType)}>
                   <option value="default">Default</option>
@@ -106,7 +116,7 @@ export default function Home() {
                   <span className={`${styles.statusBadge} ${game.status === 'completed' ? styles.statusCompleted : styles.statusActive}`}>
                     {game.status === 'completed' ? 'Completed' : 'Active'}
                   </span>
-                  <span className={styles.gameDate}>{formatDate(game.updatedAt)}</span>
+                  <span className={styles.gameDate}>{game.playedAt ? formatDate(game.playedAt + 'T00:00:00') : formatDate(game.createdAt)}</span>
                 </div>
               </div>
             ))}
