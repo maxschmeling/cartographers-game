@@ -18,6 +18,10 @@ import {
 } from '../../lib/gameStorage';
 import OpponentsPanel from '../OpponentsPanel';
 import { GAME_PIECES, GamePiece, rotatePiece, flipPiece } from '../pieces';
+import { useMultiplayer } from '../useMultiplayer';
+import RoomPanel from '../RoomPanel';
+import OpponentBoard from '../OpponentBoard';
+import mpStyles from '../multiplayer.module.css';
 
 type SeasonScoreType = {
   edictOne: number;
@@ -120,6 +124,9 @@ export default function GamePage({ params }: { params: { id: string } }) {
   const [hoverCell, setHoverCell] = useState<[number, number] | null>(null);
   const [piecesOpen, setPiecesOpen] = useState(false);
 
+  // Multiplayer
+  const { roomId, connected, opponents, error: mpError, createRoom, joinRoom, leaveRoom, broadcastState } = useMultiplayer();
+
   const handleRotate = useCallback(() => {
     if (currentShape.length > 0) {
       setCurrentShape(prev => rotatePiece(prev));
@@ -201,6 +208,18 @@ export default function GamePage({ params }: { params: { id: string } }) {
       return newState;
     });
   }
+
+  // Broadcast state to multiplayer peers when game state changes
+  useEffect(() => {
+    if (connected && gameState && meta) {
+      broadcastState({
+        name: meta.cartographer || 'Unknown',
+        selections: gameState.selections,
+        coinCount: gameState.coinCount,
+        boardType: meta.boardType,
+      });
+    }
+  }, [connected, gameState, meta, broadcastState]);
 
   if (!loaded || !meta || !gameState) return null;
 
@@ -364,6 +383,17 @@ export default function GamePage({ params }: { params: { id: string } }) {
         {/* Players / Opponents */}
         <OpponentsPanel meta={meta} onMetaChange={setMeta} />
 
+        {/* Multiplayer Room */}
+        <RoomPanel
+          roomId={roomId}
+          connected={connected}
+          error={mpError}
+          opponentCount={opponents.length}
+          onCreateRoom={createRoom}
+          onJoinRoom={joinRoom}
+          onLeaveRoom={leaveRoom}
+        />
+
         <main className={styles.mainContent}>
           <div className={styles.boardContainer}>
             <div className={styles.tileBoard} onMouseLeave={() => setHoverCell(null)}>
@@ -445,6 +475,18 @@ export default function GamePage({ params }: { params: { id: string } }) {
               {seasonOneScore + seasonTwoScore + seasonThreeScore + seasonFourScore}
             </div>
           </div>
+
+          {/* Opponent Boards */}
+          {opponents.length > 0 && (
+            <div className={mpStyles.opponentsSection}>
+              <div className={mpStyles.opponentsTitle}>Opponent Boards</div>
+              <div className={mpStyles.opponentsGrid}>
+                {opponents.map(opp => (
+                  <OpponentBoard key={opp.peerId} opponent={opp} />
+                ))}
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>

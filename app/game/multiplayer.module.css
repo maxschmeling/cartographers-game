@@ -1,0 +1,194 @@
+/* Room Panel */
+.roomPanel {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border: 2px solid var(--border-brown);
+  border-radius: 4px;
+  background: var(--parchment-light);
+}
+
+.multiplayerBtn {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid var(--border-brown);
+  background: var(--parchment-bg);
+  color: var(--border-dark);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.multiplayerBtn:hover {
+  background: var(--border-brown);
+  color: var(--parchment-light);
+}
+
+.roomInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.roomLabel {
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--border-dark);
+}
+
+.roomCode {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--border-dark);
+  background: var(--parchment-bg);
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border-brown);
+  border-radius: 3px;
+  letter-spacing: 2px;
+}
+
+.peerCount {
+  font-size: 0.8rem;
+  color: var(--border-brown);
+}
+
+.leaveBtn, .cancelBtn {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--border-brown);
+  background: transparent;
+  color: var(--border-dark);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.leaveBtn:hover, .cancelBtn:hover {
+  background: var(--border-brown);
+  color: var(--parchment-light);
+}
+
+.roomActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.createBtn, .joinBtn {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--border-brown);
+  background: var(--border-brown);
+  color: var(--parchment-light);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.createBtn:hover, .joinBtn:hover {
+  background: var(--border-dark);
+  border-color: var(--border-dark);
+}
+
+.joinRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.codeInput {
+  flex: 1;
+  padding: 0.5rem;
+  border: 2px solid var(--border-brown);
+  border-radius: 4px;
+  background: white;
+  font-family: monospace;
+  font-size: 1rem;
+  text-align: center;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--border-dark);
+}
+
+.codeInput:focus {
+  outline: none;
+  border-color: var(--border-dark);
+}
+
+.error {
+  margin-top: 0.5rem;
+  color: #8b4f4f;
+  font-size: 0.85rem;
+}
+
+/* Opponent Boards */
+.opponentsSection {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 2px solid var(--border-brown);
+  border-radius: 4px;
+  background: var(--parchment-light);
+}
+
+.opponentsTitle {
+  font-weight: bold;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--border-dark);
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+}
+
+.opponentsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.opponentCard {
+  background: var(--parchment-bg);
+  border: 2px solid var(--border-brown);
+  border-radius: 4px;
+  padding: 0.5rem;
+  width: 160px;
+}
+
+.opponentName {
+  font-weight: bold;
+  font-size: 0.75rem;
+  color: var(--border-dark);
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.miniBoard {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(11, 1fr);
+  gap: 0px;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  border: 1px solid var(--border-brown);
+}
+
+.miniCell {
+  aspect-ratio: 1;
+}
+
+.opponentCoins {
+  font-size: 0.75rem;
+  color: var(--border-dark);
+  margin-top: 0.25rem;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .opponentCard {
+    width: 130px;
+  }
+}
