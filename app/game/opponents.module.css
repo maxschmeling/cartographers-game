@@ -1,0 +1,262 @@
+/* Toggle bar - compact collapsed state */
+.toggleBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-brown);
+  border-radius: 4px;
+  background: var(--parchment-light);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+
+.toggleBar:hover {
+  background: var(--parchment-bg);
+}
+
+.toggleIcon {
+  font-size: 0.65rem;
+  color: var(--border-brown);
+  flex-shrink: 0;
+  width: 0.8rem;
+}
+
+.toggleLabel {
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--border-dark);
+  flex-shrink: 0;
+}
+
+.toggleSummary {
+  font-size: 0.8rem;
+  color: var(--border-brown);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* Expanded panel */
+.panel {
+  border: 2px solid var(--border-brown);
+  border-radius: 4px;
+  background: var(--parchment-light);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  margin-top: -0.75rem;
+}
+
+/* Player count row */
+.countRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.countLabel {
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--border-dark);
+}
+
+.countControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.countBtn {
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-brown);
+  border-radius: 3px;
+  background: var(--parchment-bg);
+  color: var(--border-dark);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.countBtn:hover:not(:disabled) {
+  background: var(--border-brown);
+  color: var(--parchment-light);
+}
+
+.countBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.countValue {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--border-dark);
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+/* Seating table */
+.seatingTable {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.seat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border-brown);
+  border-radius: 3px;
+  background: var(--parchment-bg);
+  cursor: pointer;
+  transition: all 0.15s;
+  min-height: 2rem;
+}
+
+.seat:hover {
+  border-color: var(--border-dark);
+}
+
+.seatYou {
+  border-left: 3px solid #5a7a3d;
+}
+
+.seatEditing {
+  border-color: var(--border-dark);
+  background: white;
+}
+
+.seatNumber {
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--border-brown);
+  flex-shrink: 0;
+  min-width: 3rem;
+}
+
+.seatName {
+  font-size: 0.85rem;
+  color: var(--border-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.seatEmpty {
+  color: var(--border-brown);
+  opacity: 0.6;
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+.seatInputWrap {
+  flex: 1;
+  position: relative;
+}
+
+.seatInput {
+  width: 100%;
+  padding: 0.15rem 0.3rem;
+  border: 1px solid var(--border-brown);
+  border-radius: 2px;
+  background: white;
+  font-size: 0.85rem;
+  color: var(--border-dark);
+}
+
+.seatInput:focus {
+  outline: none;
+  border-color: var(--border-dark);
+}
+
+/* Suggestions dropdown */
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--border-brown);
+  border-radius: 0 0 3px 3px;
+  z-index: 20;
+  max-height: 120px;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.suggestion {
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--border-dark);
+}
+
+.suggestion:hover {
+  background: var(--parchment-light);
+}
+
+/* Mobile backdrop */
+.mobileBackdrop {
+  display: none;
+}
+
+/* Mobile: slide-out drawer */
+@media (max-width: 768px) {
+  .panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    border: none;
+    border-top: 3px solid var(--border-brown);
+    padding: 1rem;
+    z-index: 200;
+    max-height: 60vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.2s ease-out;
+  }
+
+  .mobileBackdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 199;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .seatingTable {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
