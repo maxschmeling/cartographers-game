@@ -369,6 +369,194 @@
 	gap: 0.25rem;
 }
 
+/* Navigation */
+.headerNav {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 0.5rem;
+}
+
+.backBtn {
+	background: transparent;
+	border: none;
+	color: var(--border-brown);
+	font-size: 0.9rem;
+	cursor: pointer;
+	padding: 0.25rem 0;
+	font-weight: bold;
+}
+
+.backBtn:hover {
+	color: var(--border-dark);
+}
+
+.boardLabel {
+	font-size: 0.9rem;
+	color: var(--border-dark);
+}
+
+.statusToggle {
+	padding: 0.3rem 0.8rem;
+	border: 2px solid #5a7a3d;
+	background: transparent;
+	color: #5a7a3d;
+	border-radius: 4px;
+	cursor: pointer;
+	font-weight: bold;
+	font-size: 0.8rem;
+	transition: all 0.2s;
+}
+
+.statusToggle:hover {
+	background: #5a7a3d;
+	color: white;
+}
+
+.statusToggle.statusCompleted {
+	border-color: var(--border-brown);
+	color: var(--border-brown);
+}
+
+.statusToggle.statusCompleted:hover {
+	background: var(--border-brown);
+	color: var(--parchment-light);
+}
+
+/* Opponents */
+.opponentsSection {
+	margin-bottom: 1rem;
+	padding: 0.75rem;
+	border: 2px solid var(--border-brown);
+	border-radius: 4px;
+	background: var(--parchment-light);
+}
+
+.opponentsHeader {
+	font-weight: bold;
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: var(--border-dark);
+	margin-bottom: 0.5rem;
+}
+
+.opponentsList {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	margin-bottom: 0.5rem;
+}
+
+.opponentTag {
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+	padding: 0.2rem 0.5rem;
+	background: var(--parchment-bg);
+	border: 1px solid var(--border-brown);
+	border-radius: 3px;
+	font-size: 0.85rem;
+	color: var(--border-dark);
+}
+
+.opponentPos {
+	font-size: 0.75rem;
+	color: var(--border-brown);
+}
+
+.removeOpponent {
+	background: transparent;
+	border: none;
+	color: var(--border-brown);
+	cursor: pointer;
+	font-size: 1rem;
+	line-height: 1;
+	padding: 0 0.2rem;
+}
+
+.removeOpponent:hover {
+	color: #8b4f4f;
+}
+
+.addOpponent {
+	display: flex;
+	gap: 0.4rem;
+	align-items: center;
+}
+
+.addOpponent input {
+	flex: 1;
+	padding: 0.3rem 0.5rem;
+	border: 1px solid var(--border-brown);
+	border-radius: 3px;
+	background: white;
+	font-size: 0.85rem;
+	color: var(--border-dark);
+}
+
+.addOpponent input:focus {
+	outline: none;
+	border-color: var(--border-dark);
+}
+
+.addOpponent select {
+	padding: 0.3rem;
+	border: 1px solid var(--border-brown);
+	border-radius: 3px;
+	background: var(--parchment-bg);
+	font-size: 0.8rem;
+	color: var(--border-dark);
+}
+
+.addOpponent button {
+	padding: 0.3rem 0.6rem;
+	border: 1px solid var(--border-brown);
+	background: var(--border-brown);
+	color: var(--parchment-light);
+	border-radius: 3px;
+	cursor: pointer;
+	font-size: 0.8rem;
+	font-weight: bold;
+}
+
+.addOpponent button:hover {
+	background: var(--border-dark);
+}
+
+.opponentInputWrap {
+	flex: 1;
+	position: relative;
+}
+
+.opponentInputWrap input {
+	width: 100%;
+}
+
+.suggestions {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background: white;
+	border: 1px solid var(--border-brown);
+	border-radius: 0 0 3px 3px;
+	z-index: 10;
+	max-height: 120px;
+	overflow-y: auto;
+}
+
+.suggestion {
+	padding: 0.3rem 0.5rem;
+	cursor: pointer;
+	font-size: 0.85rem;
+	color: var(--border-dark);
+}
+
+.suggestion:hover {
+	background: var(--parchment-light);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
 	.container {
